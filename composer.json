@@ -1,0 +1,15 @@
+{
+    "name": "ptb/ppl-api",
+    "description": "API for PPL Carrier Service",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "league/oauth2-client": "^2.8"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "PTB\\PPLApi\\": "src/"
+        }
+    }
+}

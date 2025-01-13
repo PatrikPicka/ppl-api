@@ -11,6 +11,7 @@ class CODSetting implements JsonSerializable
 	public function __construct(
 		public float $codPrice,
 		public string $codCurrency,
+		public string $codVariableSymbol,
 	) {
 	}
 
@@ -19,6 +20,7 @@ class CODSetting implements JsonSerializable
 		return [
 			'codPrice' => $this->codPrice,
 			'codCurrency' => $this->codCurrency,
+			'codVarSym' => $this->codVariableSymbol,
 		];
 	}
 }

@@ -134,10 +134,10 @@ class PPLApi
 			return $this->request($endpoint, $data, $method, false);
 		}
 
-		if ($response->getStatusCode() >= 400) {
+		if ($response->getStatusCode() >= 400 ) {
 			throw new PPLException("API call failed: {$response->getBody()}");
 		}
 
-		return json_decode($response->getBody()->getContents(), true);
+		return json_decode($response->getBody()->getContents(), true); //TODO: Get informations for package from url which is in header "Location"
 	}
 }

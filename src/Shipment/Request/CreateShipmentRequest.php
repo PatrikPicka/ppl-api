@@ -28,28 +28,32 @@ class CreateShipmentRequest implements JsonSerializable
 	{
 		$data = [
 			'labelSettings' => $this->labelSetting->jsonSerialize(),
-			'shipments' => [
-				'referenceId' => $this->shipmentSetting->referenceId,
-				'productType' => $this->shipmentSetting->shipmentType,
-				'shipmentSet' => [
-					'numberOfShipments' => 1,
-					'shipmentSetItems' => [
-						[
-							'weighedShipmentInfo' => [
-								'weight' => $this->shipmentSetting->shipmentWeight,
-							],
+			'shipments' => [],
+		];
+
+		$shipmentData = [
+			'referenceId' => $this->shipmentSetting->referenceId,
+			'productType' => $this->shipmentSetting->shipmentType,
+			'shipmentSet' => [
+				'numberOfShipments' => 1,
+				'shipmentSetItems' => [
+					[
+						'weighedShipmentInfo' => [
+							'weight' => $this->shipmentSetting->shipmentWeight,
 						],
 					],
 				],
-				'sender' => $this->senderSetting->jsonSerialize(),
-				'recipient' => $this->recipientSetting->jsonSerialize(),
-				'pickupPoint' => $this->pickupPointSetting->jsonSerialize(),
 			],
+			'sender' => $this->senderSetting->jsonSerialize(),
+			'recipient' => $this->recipientSetting->jsonSerialize(),
+			'specificDelivery' => $this->pickupPointSetting->jsonSerialize(),
 		];
 
 		if ($this->codSetting !== null) {
-			$data['shipments']['cashOnDelivery'] = $this->codSetting->jsonSerialize();
+			$shipmentData['cashOnDelivery'] = $this->codSetting->jsonSerialize();
 		}
+
+		$data['shipments'][] = $shipmentData;
 
 		return $data;
 	}

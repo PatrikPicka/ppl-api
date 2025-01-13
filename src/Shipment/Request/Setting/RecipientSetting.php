@@ -25,7 +25,7 @@ class RecipientSetting implements JsonSerializable
 			'name' => $this->name,
 			'street' => $this->street,
 			'city' => $this->city,
-			'zip' => $this->zip,
+			'zipCode' => $this->zip,
 			'country' => $this->country,
 			'phone' => $this->phone,
 			'email' => $this->email,

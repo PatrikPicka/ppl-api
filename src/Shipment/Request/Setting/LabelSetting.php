@@ -28,8 +28,11 @@ class LabelSetting implements JsonSerializable
 	{
 		return [
 			'format' => $this->format->value,
-			'pageSize' => $this->pageSize->value,
-			'position' => $this->offset + 1,
+			'completeLabelSettings' => [
+				'isCompleteLabelRequested' => true,
+				'pageSize' => $this->pageSize->value,
+				'position' => $this->offset + 1,
+			],
 		];
 	}
 }

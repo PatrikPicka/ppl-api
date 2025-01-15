@@ -1,0 +1,26 @@
+networks:
+  ptb-ppl-api:
+
+services:
+    php-service:
+      build:
+        context: ./
+        dockerfile: ./Dockerfile
+      container_name: ptb-ppl-api-php
+      volumes:
+        - ./:/var/www/project
+      networks:
+        - ptb-ppl-api
+
+    nginx-service:
+      image: nginx
+      container_name: ptb-ppl-api-nginx
+      volumes:
+        - ./:/var/www/project
+        - ./default.conf:/etc/nginx/conf.d/default.conf
+      ports:
+        - '8082:80'
+      depends_on:
+        - php-service
+      networks:
+        - ptb-ppl-api

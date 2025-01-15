@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace PTB\PPLApi;
 
+use Exception;
 use GuzzleHttp\Client;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Http\Message\ResponseInterface;
 use PTB\PPLApi\Exception\PPLException;
-use PTB\PPLApi\Shipment\Request\CreateShipmentRequest;
+use PTB\PPLApi\Label\Response\PdfResponse;
+use PTB\PPLApi\Shipment\Request\CreateShipmenRequest;
+use PTB\PPLApi\Shipment\Request\CreateShipmentBatchRequest;
+use PTB\PPLApi\Shipment\Response\ShipmentBatchResponse;
+use PTB\PPLApi\Shipment\Response\ShipmentResponse;
 
 class PPLApi
 {
@@ -43,21 +49,65 @@ class PPLApi
 		}
 	}
 
-	public function createShipment(CreateShipmentRequest $shipmentData): array
+	/**
+	 * Creates a shipment and returns shipment batch ID
+	 *
+	 * @param CreateShipmentBatchRequest|CreateShipmenRequest $shipmentData
+	 * @return string
+	 *
+	 * @throws PPLException
+	 */
+	public function createShipment(CreateShipmentBatchRequest|CreateShipmenRequest $shipmentData): string
 	{
-		return $this->request('/shipment/batch', $shipmentData->jsonSerialize());
+		$response = $this->request('/shipment/batch', $shipmentData->jsonSerialize());
+
+		if (isset($response->getHeader('Location')[0]) === false) {
+			throw new PPLException('There was an error while trying to retrieve shipments details');
+		}
+
+		$locationExploded = explode('/', $response->getHeader('Location')[0]);
+
+		return end($locationExploded);
 	}
 
-	public function printLabel(string $shipmentId): string
+	public function getShipmentBatch(string $shipmentBatchId): ShipmentBatchResponse
 	{
-		$response = $this->request("/shipments/{$shipmentId}/label", [], 'GET');
+		$response = $this->request("/shipment/batch/{$shipmentBatchId}", [], 'GET');
 
-		return $response['label'];
+		$responseData = json_decode($response->getBody()->getContents(), true);
+
+		if ($responseData === null) {
+			throw new PPLException(sprintf(
+				'There was an error while trying to retrieve shipment batch details. Shipment ID: %s',
+				$shipmentBatchId,
+			));
+		}
+
+		return ShipmentBatchResponse::fromArrayResponse($responseData);
 	}
 
-	public function orderPickup(array $pickupData): array
+	public function getShipment(string $shipmentId): ShipmentResponse
 	{
-		return $this->request('/pickups', $pickupData);
+		$response = $this->request("/shipment/batch/{$shipmentId}", [], 'GET');
+
+		$responseData = json_decode($response->getBody()->getContents(), true);
+		if ($responseData === null || count($responseData['items']) > 1) {
+			throw new PPLException(sprintf(
+				'There was an error while trying to retrieve shipment details. Shipment ID: %s',
+				$shipmentId,
+			));
+		}
+
+		return ShipmentResponse::fromArrayResponse($responseData['items'][0]);
+	}
+
+	public function getLabelPdf(string $labelUrl): PdfResponse
+	{
+		$response = $this->request(str_replace($this->apiUrl, '', $labelUrl), [], 'GET');
+
+		return PdfResponse::fromArrayResponse([
+			'pdfContent' => $response->getBody()->getContents(),
+		]);
 	}
 
 	public function getLocations(array $filters = []): array
@@ -86,7 +136,7 @@ class PPLApi
 			]);
 
 			return $response->getStatusCode() === 200;
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 
 			return false;
 		}
@@ -104,7 +154,7 @@ class PPLApi
 		try {
 			$accessToken = $this->oauthProvider->getAccessToken('client_credentials');
 			$this->accessToken = $accessToken->getToken();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			throw new PPLException("Failed to get access token: " . $e->getMessage());
 		}
 	}
@@ -114,7 +164,7 @@ class PPLApi
 		return $this->accessToken;
 	}
 
-	private function request(string $endpoint, array $data = [], string $method = 'POST', $shouldRetry = true): array
+	private function request(string $endpoint, array $data = [], string $method = 'POST', $shouldRetry = true): ResponseInterface
 	{
 		if (empty($this->accessToken)) {
 			$this->refreshToken();
@@ -138,6 +188,6 @@ class PPLApi
 			throw new PPLException("API call failed: {$response->getBody()}");
 		}
 
-		return json_decode($response->getBody()->getContents(), true); //TODO: Get informations for package from url which is in header "Location"
+		return $response;
 	}
 }

@@ -10,13 +10,15 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Http\Message\ResponseInterface;
 use PTB\PPLApi\Exception\PPLException;
 use PTB\PPLApi\Label\Response\PdfResponse;
-use PTB\PPLApi\Shipment\Request\CreateShipmenRequest;
+use PTB\PPLApi\Shipment\Request\CreateShipmentRequest;
 use PTB\PPLApi\Shipment\Request\CreateShipmentBatchRequest;
 use PTB\PPLApi\Shipment\Response\ShipmentBatchResponse;
 use PTB\PPLApi\Shipment\Response\ShipmentResponse;
 
 class PPLApi
 {
+	private const string ACCESS_TOKEN_ENDPOINT = '/login/getAccessToken';
+
 	private Client $httpClient;
 	private GenericProvider $oauthProvider;
 	private string $accessToken;
@@ -25,18 +27,17 @@ class PPLApi
 	public function __construct(
 		string $clientId,
 		string $clientSecret,
-		string $accessTokenUrl,
-		string $apiUrl = 'https://api-dev.dhl.com/ecs/ppl/myapi2',
+		string $apiUrl = 'https://api-dev.dhl.com/ecs/ppl',
 		string $scope = 'myapi2',
 		?string $accessToken = null,
 	) {
 		$this->httpClient = new Client();
-		$this->apiUrl = rtrim($apiUrl, '/');
+		$this->apiUrl = sprintf('%s/%s', $apiUrl, $scope);
 
 		$this->oauthProvider = new GenericProvider([
 			'clientId'                => $clientId,
 			'clientSecret'            => $clientSecret,
-			'urlAccessToken'          => $accessTokenUrl,
+			'urlAccessToken'          => $this->apiUrl . self::ACCESS_TOKEN_ENDPOINT,
 			'urlAuthorize'            => '',
 			'urlResourceOwnerDetails' => '',
 			'scope'                   => $scope,
@@ -52,12 +53,12 @@ class PPLApi
 	/**
 	 * Creates a shipment and returns shipment batch ID
 	 *
-	 * @param CreateShipmentBatchRequest|CreateShipmenRequest $shipmentData
+	 * @param CreateShipmentBatchRequest|CreateShipmentRequest $shipmentData
 	 * @return string
 	 *
 	 * @throws PPLException
 	 */
-	public function createShipment(CreateShipmentBatchRequest|CreateShipmenRequest $shipmentData): string
+	public function createShipment(CreateShipmentBatchRequest|CreateShipmentRequest $shipmentData): string
 	{
 		$response = $this->request('/shipment/batch', $shipmentData->jsonSerialize());
 
@@ -149,6 +150,16 @@ class PPLApi
 		return $this->accessToken;
 	}
 
+	public function isTokenSameAs(string $token): bool
+	{
+		return $this->accessToken === $token;
+	}
+
+	public function getToken(): string
+	{
+		return $this->accessToken;
+	}
+
 	private function refreshToken(): void
 	{
 		try {
@@ -157,11 +168,6 @@ class PPLApi
 		} catch (Exception $e) {
 			throw new PPLException("Failed to get access token: " . $e->getMessage());
 		}
-	}
-
-	private function getToken(): string
-	{
-		return $this->accessToken;
 	}
 
 	private function request(string $endpoint, array $data = [], string $method = 'POST', $shouldRetry = true): ResponseInterface

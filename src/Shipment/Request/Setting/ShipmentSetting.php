@@ -20,7 +20,7 @@ class ShipmentSetting implements JsonSerializable
 	{
 		return [
 			'referenceId' => $this->referenceId,
-			'productType' => $this->shipmentType,
+			'productType' => $this->shipmentType->value,
 			'shipmentSet' => [
 				'numberOfShipments' => 1,
 				'shipmentSetItems' => [

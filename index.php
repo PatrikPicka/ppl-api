@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use GuzzleHttp\Exception\ClientException;
 use PTB\PPLApi\Label\Enum\LabelFormatEnum;
 use PTB\PPLApi\Label\Enum\LabelPageSizeEnum;
 use PTB\PPLApi\PPLApi;
 use PTB\PPLApi\Shipment\Enum\ShipmentTypeEnum;
-use PTB\PPLApi\Shipment\Request\CreateShipmenRequest;
+use PTB\PPLApi\Shipment\Request\CreateShipmentRequest;
 use PTB\PPLApi\Shipment\Request\Data\ShipmentData;
 use PTB\PPLApi\Shipment\Request\Setting\CODSetting;
 use PTB\PPLApi\Shipment\Request\Setting\LabelSetting;
@@ -58,14 +59,12 @@ function getTokenFromFile(string $path = './token.json'): ?string
 
 $clientId = 'your_client_id';
 $clientSecret = 'your_client_secret';
-$accessTokenUrl = 'https://api-dev.dhl.com/ecs/ppl/myapi2/login/getAccessToken';
 $apiUrl = 'https://api-dev.dhl.com/ecs/ppl/myapi2';
 $scope = 'your_scope';
 
 $api = new PPLApi(
 	$clientId,
 	$clientSecret,
-	$accessTokenUrl,
 	$apiUrl,
 	$scope,
 	getTokenFromFile(),
@@ -76,7 +75,7 @@ if ($api->isTokenValid() === false) {
 	saveToken($api->refreshAndGetToken());
 }
 
-$createShipmentRequest = new CreateShipmenRequest(
+$createShipmentRequest = new CreateShipmentRequest(
 	new LabelSetting(
 		LabelFormatEnum::PDF,
 		LabelPageSizeEnum::A4,

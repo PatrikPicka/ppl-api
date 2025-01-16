@@ -10,7 +10,7 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Http\Message\ResponseInterface;
 use PTB\PPLApi\Exception\PPLException;
 use PTB\PPLApi\Label\Response\PdfResponse;
-use PTB\PPLApi\Shipment\Request\CreateShipmenRequest;
+use PTB\PPLApi\Shipment\Request\CreateShipmentRequest;
 use PTB\PPLApi\Shipment\Request\CreateShipmentBatchRequest;
 use PTB\PPLApi\Shipment\Response\ShipmentBatchResponse;
 use PTB\PPLApi\Shipment\Response\ShipmentResponse;
@@ -52,12 +52,12 @@ class PPLApi
 	/**
 	 * Creates a shipment and returns shipment batch ID
 	 *
-	 * @param CreateShipmentBatchRequest|CreateShipmenRequest $shipmentData
+	 * @param CreateShipmentBatchRequest|CreateShipmentRequest $shipmentData
 	 * @return string
 	 *
 	 * @throws PPLException
 	 */
-	public function createShipment(CreateShipmentBatchRequest|CreateShipmenRequest $shipmentData): string
+	public function createShipment(CreateShipmentBatchRequest|CreateShipmentRequest $shipmentData): string
 	{
 		$response = $this->request('/shipment/batch', $shipmentData->jsonSerialize());
 

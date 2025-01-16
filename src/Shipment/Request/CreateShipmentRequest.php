@@ -8,7 +8,7 @@ use JsonSerializable;
 use PTB\PPLApi\Shipment\Request\Data\ShipmentData;
 use PTB\PPLApi\Shipment\Request\Setting\LabelSetting;
 
-class CreateShipmenRequest implements JsonSerializable
+class CreateShipmentRequest implements JsonSerializable
 {
 	public function __construct(
 		public LabelSetting $labelSetting,

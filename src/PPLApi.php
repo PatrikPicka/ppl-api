@@ -26,12 +26,12 @@ class PPLApi
 		string $clientId,
 		string $clientSecret,
 		string $accessTokenUrl,
-		string $apiUrl = 'https://api-dev.dhl.com/ecs/ppl/myapi2',
+		string $apiUrl = 'https://api-dev.dhl.com/ecs/ppl',
 		string $scope = 'myapi2',
 		?string $accessToken = null,
 	) {
 		$this->httpClient = new Client();
-		$this->apiUrl = rtrim($apiUrl, '/');
+		$this->apiUrl = sprintf('%s/%s', $apiUrl, $scope);
 
 		$this->oauthProvider = new GenericProvider([
 			'clientId'                => $clientId,

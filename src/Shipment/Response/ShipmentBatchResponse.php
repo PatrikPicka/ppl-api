@@ -19,7 +19,7 @@ class ShipmentBatchResponse implements ResponseInterface
 	{
 		$labelsUrl = null;
 		if (isset($data['completeLabel']['labelUrls']) === true) {
-			$labelsUrl = $data['completeLabel']['labelUrls'];
+			$labelsUrl = $data['completeLabel']['labelUrls'][0];
 		}
 
 		$shipments = [];

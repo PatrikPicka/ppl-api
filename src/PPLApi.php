@@ -17,6 +17,8 @@ use PTB\PPLApi\Shipment\Response\ShipmentResponse;
 
 class PPLApi
 {
+	private const string ACCESS_TOKEN_ENDPOINT = '/login/getAccessToken';
+
 	private Client $httpClient;
 	private GenericProvider $oauthProvider;
 	private string $accessToken;
@@ -25,7 +27,6 @@ class PPLApi
 	public function __construct(
 		string $clientId,
 		string $clientSecret,
-		string $accessTokenUrl,
 		string $apiUrl = 'https://api-dev.dhl.com/ecs/ppl',
 		string $scope = 'myapi2',
 		?string $accessToken = null,
@@ -36,7 +37,7 @@ class PPLApi
 		$this->oauthProvider = new GenericProvider([
 			'clientId'                => $clientId,
 			'clientSecret'            => $clientSecret,
-			'urlAccessToken'          => $accessTokenUrl,
+			'urlAccessToken'          => $this->apiUrl . self::ACCESS_TOKEN_ENDPOINT,
 			'urlAuthorize'            => '',
 			'urlResourceOwnerDetails' => '',
 			'scope'                   => $scope,

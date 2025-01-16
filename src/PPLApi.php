@@ -149,6 +149,16 @@ class PPLApi
 		return $this->accessToken;
 	}
 
+	public function isTokenSameAs(string $token): bool
+	{
+		return $this->accessToken === $token;
+	}
+
+	public function getToken(): string
+	{
+		return $this->accessToken;
+	}
+
 	private function refreshToken(): void
 	{
 		try {
@@ -157,11 +167,6 @@ class PPLApi
 		} catch (Exception $e) {
 			throw new PPLException("Failed to get access token: " . $e->getMessage());
 		}
-	}
-
-	private function getToken(): string
-	{
-		return $this->accessToken;
 	}
 
 	private function request(string $endpoint, array $data = [], string $method = 'POST', $shouldRetry = true): ResponseInterface

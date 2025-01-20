@@ -114,7 +114,7 @@ class PPLApi
 	public function cancelShipment(string $shipmentNumber): bool
 	{
 		try {
-			$this->request("/shipment/{$shipmentNumber}/cancel}", [], 'POST');
+			$this->request("/shipment/{$shipmentNumber}/cancel");
 		} catch (PPLException $e) {
 			return false;
 		}

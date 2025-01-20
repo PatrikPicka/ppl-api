@@ -111,20 +111,15 @@ class PPLApi
 		]);
 	}
 
-	public function getLocations(array $filters = []): array
+	public function cancelShipment(string $shipmentNumber): bool
 	{
-		$response = $this->httpClient->get("{$this->apiUrl}/locations", [
-			'headers' => [
-				'Authorization' => "Bearer {$this->accessToken}",
-			],
-			'query' => $filters,
-		]);
-
-		if ($response->getStatusCode() >= 400) {
-			throw new PPLException("Failed to fetch locations: {$response->getBody()}");
+		try {
+			$this->request("/shipment/{$shipmentNumber}/cancel}", [], 'POST');
+		} catch (PPLException $e) {
+			return false;
 		}
 
-		return json_decode($response->getBody()->getContents(), true);
+		return true;
 	}
 
 	public function isTokenValid(): bool

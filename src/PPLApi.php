@@ -10,6 +10,8 @@ use League\OAuth2\Client\Provider\GenericProvider;
 use Psr\Http\Message\ResponseInterface;
 use PTB\PPLApi\Exception\PPLException;
 use PTB\PPLApi\Label\Response\PdfResponse;
+use PTB\PPLApi\Shipment\Enum\ShipmentStateEnum;
+use PTB\PPLApi\Shipment\Enum\ShipmentStatusEnum;
 use PTB\PPLApi\Shipment\Request\CreateShipmentRequest;
 use PTB\PPLApi\Shipment\Request\CreateShipmentBatchRequest;
 use PTB\PPLApi\Shipment\Response\ShipmentBatchResponse;
@@ -100,6 +102,31 @@ class PPLApi
 		}
 
 		return ShipmentResponse::fromArrayResponse($responseData['items'][0]);
+	}
+
+	public function getShipmentState(string $shipmentNumber): ShipmentStateEnum
+	{
+		$response = $this->request("/shipment?limit=1&offset=0&ShipmentNumbers={$shipmentNumber}", [], 'GET');
+
+		$responseData = json_decode($response->getBody()->getContents(), true);
+		if ($responseData === null || isset($responseData['trackAndTrace']) === false) {
+			throw new PPLException(sprintf(
+				'There was an error while trying to retrieve shipment details. Shipment Number: %s',
+				$shipmentNumber,
+			));
+		}
+
+		$shipmentState = ShipmentStateEnum::tryFrom($responseData['trackAndTrace']['lastEventCode']);
+
+		if ($shipmentState === null) {
+			throw new PPLException(sprintf(
+				'Unsupported shipment state: %s - Supported shipment states: %s',
+				$responseData['trackAndTrace']['lastEventCode'],
+				implode(', ', array_map(fn (ShipmentStateEnum $shipmentState): string => $shipmentState->value, ShipmentStateEnum::cases())),
+			));
+		}
+
+		return $shipmentState;
 	}
 
 	public function getLabelPdf(string $labelUrl): PdfResponse

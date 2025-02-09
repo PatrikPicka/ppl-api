@@ -109,14 +109,14 @@ class PPLApi
 		$response = $this->request("/shipment?limit=1&offset=0&ShipmentNumbers={$shipmentNumber}", [], 'GET');
 
 		$responseData = json_decode($response->getBody()->getContents(), true);
-		if ($responseData === null || isset($responseData['trackAndTrace']) === false) {
+		if ($responseData === null || isset($responseData[0]['trackAndTrace']) === false) {
 			throw new PPLException(sprintf(
 				'There was an error while trying to retrieve shipment details. Shipment Number: %s',
 				$shipmentNumber,
 			));
 		}
 
-		$shipmentState = ShipmentStateEnum::tryFrom($responseData['trackAndTrace']['lastEventCode']);
+		$shipmentState = ShipmentStateEnum::tryFrom($responseData[0]['trackAndTrace']['lastEventCode']);
 
 		if ($shipmentState === null) {
 			throw new PPLException(sprintf(

@@ -121,7 +121,7 @@ class PPLApi
 		if ($shipmentState === null) {
 			throw new PPLException(sprintf(
 				'Unsupported shipment state: %s - Supported shipment states: %s',
-				$responseData['trackAndTrace']['lastEventCode'],
+				$responseData[0]['trackAndTrace']['lastEventCode'],
 				implode(', ', array_map(fn (ShipmentStateEnum $shipmentState): string => $shipmentState->value, ShipmentStateEnum::cases())),
 			));
 		}

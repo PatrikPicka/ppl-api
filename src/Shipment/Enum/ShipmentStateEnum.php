@@ -9,9 +9,9 @@ enum ShipmentStateEnum: string
 	case ACTIVE = 'Active';
 	case PICKED_UP_FROM_SENDER = 'PickedUpFromSender';
 	case DELIVERED_TO_PICKUP_POINT = 'DeliveredToPickupPoint';
-	case DELIVERED_TO_PARCEL_SHOP = 'Delivered.Parcelshop';
 	case DELIVERED = 'Delivered';
-	case BACK_TO_SENDER = 'BackToSender';
+    case DELIVERED_PARCEL_SHOP = 'Delivered.Parcelshop';
+    case BACK_TO_SENDER = 'BackToSender';
 	case CANCELED = 'Canceled';
 	case REJECTED = 'Rejected';
 	case NOT_DELIVERED = 'NotDelivered';

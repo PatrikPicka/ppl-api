@@ -8,6 +8,7 @@ enum ShipmentStateEnum: string
 {
 	case ACTIVE = 'Active';
 	case PICKED_UP_FROM_SENDER = 'PickedUpFromSender';
+    case TAKEN_OVER_FROM_SENDER = 'ShipmentInTransport.TakeOverFromSender';
 	case DELIVERED_TO_PICKUP_POINT = 'DeliveredToPickupPoint';
 	case DELIVERED = 'Delivered';
     case DELIVERED_PARCEL_SHOP = 'Delivered.Parcelshop';

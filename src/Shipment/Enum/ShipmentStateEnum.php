@@ -13,6 +13,7 @@ enum ShipmentStateEnum: string
 	case DELIVERED = 'Delivered';
     case DELIVERED_PARCEL_SHOP = 'Delivered.Parcelshop';
     case BACK_TO_SENDER = 'BackToSender';
+    case DELIVERED_BACK_TO_SENDER = 'Delivered.BackToSender';
 	case CANCELED = 'Canceled';
 	case REJECTED = 'Rejected';
 	case NOT_DELIVERED = 'NotDelivered';
